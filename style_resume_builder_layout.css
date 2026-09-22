@@ -1,0 +1,936 @@
+/* ==========================================================================
+   1. 변수 및 컬러 시스템 (Variables & Color Systems)
+   - 앱 전체에서 공통으로 사용되는 폰트, 색상, 그림자, 크기 등을 정의합니다.
+   ========================================================================== */
+:root {
+    /* 기본 폰트 설정 */
+    --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    
+    /* 라이트 테마 (기본값) */
+    --bg-app: #f4f6f8;             /* 앱 전체 배경색 */
+    --bg-surface: #ffffff;         /* 패널 및 카드 배경색 */
+    --bg-surface-subtle: #f8fafc;  /* 폼 요소 등 약간 어두운 배경색 */
+    --border-color: #e2e8f0;       /* 기본 테두리 색상 */
+    --border-focus: #3b82f6;       /* 포커스 시 테두리 색상 (파란색) */
+    
+    --text-main: #1e293b;          /* 기본 텍스트 색상 */
+    --text-muted: #64748b;         /* 보조 텍스트 색상 */
+    --text-light: #94a3b8;         /* 연한 텍스트 색상 */
+    
+    --primary: #1a56db;            /* 주요 포인트 색상 (버튼 등) */
+    --primary-hover: #1e429f;      /* 주요 색상 호버 상태 */
+    --primary-light: #e1effe;      /* 주요 색상의 밝은 버전 */
+    --secondary: #4b5563;          /* 보조 포인트 색상 */
+    --secondary-hover: #374151;    /* 보조 색상 호버 상태 */
+    --accent: #0d9488;             /* 강조 색상 (인쇄 버튼 등) */
+    --danger: #e11d48;             /* 경고/삭제 색상 */
+    --danger-hover: #be123c;       /* 경고/삭제 호버 상태 */
+    
+    /* 그림자 효과 */
+    --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+    --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+    
+    /* 모서리 둥글기 */
+    --radius-sm: 6px;
+    --radius-md: 10px;
+    --radius-lg: 16px;
+    
+    /* 애니메이션 전환 효과 */
+    --transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    
+    /* A4 규격 및 미리보기 설정 */
+    --a4-width: 210mm;
+    --a4-height: 297mm;
+    --preview-scale: 1;
+}
+
+/* 다크 테마 오버라이드 (data-theme="dark" 일 때 적용) */
+[data-theme="dark"] {
+    --bg-app: #0f172a;
+    --bg-surface: #1e293b;
+    --bg-surface-subtle: #334155;
+    --border-color: #334155;
+    --border-focus: #60a5fa;
+    
+    --text-main: #f8fafc;
+    --text-muted: #cbd5e1;
+    --text-light: #64748b;
+    
+    --primary: #3b82f6;
+    --primary-hover: #60a5fa;
+    --primary-light: #1e3a8a;
+    --secondary: #94a3b8;
+    --secondary-hover: #cbd5e1;
+    
+    --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.5);
+    --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.3);
+    --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.4);
+}
+
+/* ==========================================================================
+   2. 기본 초기화 및 접근성 (Base Reset & Accessibility)
+   - 브라우저 기본 마진/패딩을 없애고 접근성용 유틸리티 클래스를 정의합니다.
+   ========================================================================== */
+*, *::before, *::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: var(--font-sans);
+    background-color: var(--bg-app);
+    color: var(--text-main);
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* 화면에는 보이지 않지만, 스크린 리더에서는 읽히도록 하는 접근성 클래스 */
+.visually-hidden {
+    position: absolute !important;
+    width: 1px !important;
+    height: 1px !important;
+    padding: 0 !important;
+    margin: -1px !important;
+    overflow: hidden !important;
+    clip: rect(0, 0, 0, 0) !important;
+    white-space: nowrap !important;
+    border: 0 !important;
+}
+
+/* ==========================================================================
+   3. 전체 레이아웃 구조 (Layout Structure)
+   - 상단 헤더, 에디터 패널, 미리보기 패널의 위치와 그리드를 잡습니다.
+   ========================================================================== */
+/* 상단 헤더 */
+.app-header {
+    background-color: var(--bg-surface);
+    border-bottom: 1px solid var(--border-color);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    padding: 0 2rem;
+    height: 70px;
+    display: flex;
+    align-items: center;
+    box-shadow: var(--shadow-sm);
+}
+
+.header-container {
+    width: 100%;
+    max-width: 1600px;
+    margin: 0 auto;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.logo-container .app-logo {
+    font-size: 1.4rem;
+    font-weight: 700;
+    letter-spacing: -0.025em;
+    color: var(--primary);
+}
+
+.controls-nav {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+}
+
+.control-group {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.control-group label {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--text-muted);
+}
+
+/* 메인 워크스페이스 (좌우 반반 그리드 분할) */
+.workspace-container {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2rem;
+    max-width: 1600px;
+    margin: 0 auto;
+    padding: 2rem;
+    height: calc(100vh - 70px);
+    overflow: hidden;
+}
+
+/* 좌측 입력/수정 에디터 패널 */
+.editor-panel {
+    background-color: var(--bg-surface);
+    border-radius: var(--radius-lg);
+    border: 1px solid var(--border-color);
+    padding: 2rem;
+    overflow-y: auto;
+    box-shadow: var(--shadow-sm);
+}
+
+/* 우측 이력서 미리보기 패널 */
+.preview-panel {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    overflow-y: auto;
+    padding: 0 1rem 2rem 1rem;
+}
+
+/* 미리보기 패널 상단 고정 컨트롤 영역 (버튼 등) */
+.preview-sticky-controls {
+    position: sticky;
+    top: 0;
+    background-color: var(--bg-app);
+    width: 100%;
+    padding: 1rem 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    z-index: 10;
+    margin-bottom: 1rem;
+}
+
+/* ==========================================================================
+   4. 폼 요소 및 컴포넌트 (Form Elements & Components)
+   - 입력창, 텍스트에리어, 버튼, 추가/삭제 항목 스타일을 정의합니다.
+   ========================================================================== */
+.panel-title {
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin-bottom: 1.5rem;
+    letter-spacing: -0.02em;
+}
+
+/* 개별 정보 입력 묶음 섹션 */
+.form-section {
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-md);
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+    background-color: var(--bg-surface-subtle);
+    transition: var(--transition);
+}
+
+.form-section:focus-within {
+    border-color: var(--border-focus);
+    box-shadow: 0 0 0 1px var(--border-focus);
+}
+
+.form-section legend {
+    font-weight: 600;
+    font-size: 1.1rem;
+    padding: 0 0.5rem;
+    color: var(--primary);
+}
+
+/* 폼 요소 그리드 정렬 (2열 배치) */
+.form-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1.25rem;
+    margin-top: 0.5rem;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.375rem;
+}
+
+/* 전체 너비를 차지해야 하는 입력폼 */
+.form-group.full-width {
+    grid-column: span 2;
+}
+
+label {
+    font-size: 0.85rem;
+    font-weight: 500;
+    color: var(--text-main);
+}
+
+/* 기본 인풋 박스 스타일 */
+input[type="text"],
+input[type="email"],
+input[type="tel"],
+input[type="url"],
+select,
+textarea {
+    width: 100%;
+    padding: 0.625rem 0.875rem;
+    font-family: var(--font-sans);
+    font-size: 0.9rem;
+    background-color: var(--bg-surface);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-sm);
+    color: var(--text-main);
+    transition: var(--transition);
+}
+
+input:focus, select:focus, textarea:focus {
+    outline: none;
+    border-color: var(--border-focus);
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
+}
+
+textarea {
+    resize: vertical; /* 세로로만 크기 조절 허용 */
+}
+
+/* 버튼 공통 스타일 */
+.btn {
+    font-family: var(--font-sans);
+    font-size: 0.875rem;
+    font-weight: 600;
+    padding: 0.625rem 1.25rem;
+    border-radius: var(--radius-sm);
+    border: 1px solid transparent;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    transition: var(--transition);
+}
+
+.btn-primary { background-color: var(--primary); color: #ffffff; }
+.btn-primary:hover { background-color: var(--primary-hover); }
+
+.btn-secondary { background-color: var(--bg-surface); border-color: var(--border-color); color: var(--text-main); }
+.btn-secondary:hover { background-color: var(--bg-surface-subtle); border-color: var(--text-muted); }
+
+/* 항목 추가 버튼 스타일 (경력, 학력 등) */
+.btn-add {
+    width: 100%;
+    margin-top: 1rem;
+    background-color: var(--primary-light);
+    color: var(--primary);
+    border: 1px dashed var(--primary);
+}
+.btn-add:hover { background-color: var(--primary); color: #ffffff; }
+
+/* 인쇄하기 버튼 */
+.btn-print { background-color: var(--accent); color: white; font-size: 1rem; padding: 0.75rem 1.5rem; border-radius: var(--radius-md); box-shadow: var(--shadow-md); }
+.btn-print:hover { transform: translateY(-1px); box-shadow: var(--shadow-lg); }
+
+/* 동적으로 추가되는 개별 항목 래퍼 (삭제 버튼 포함) */
+.dynamic-item {
+    background-color: var(--bg-surface);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-sm);
+    padding: 1rem;
+    margin-bottom: 1rem;
+    position: relative;
+}
+.btn-remove-item {
+    position: absolute;
+    top: 0.5rem;
+    right: 0.5rem;
+    background: none;
+    border: none;
+    color: var(--danger);
+    cursor: pointer;
+    font-weight: bold;
+}
+
+/* 커스텀 파일(사진) 업로드 컴포넌트 */
+.custom-file-upload-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    margin-top: 6px;
+    width: 100%;
+}
+.file-name-text {
+    font-size: 13px;
+    color: var(--text-muted);
+    font-weight: 500;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+label#btn-choose-file {
+    margin: 0;
+    cursor: pointer;
+    display: inline-block;
+    padding: 8px 14px;
+    font-size: 13px;
+    font-weight: 600;
+    border-radius: var(--radius-sm);
+    background-color: var(--bg-surface-subtle);
+    border: 1px solid var(--border-color);
+    color: var(--text-main);
+    transition: var(--transition);
+}
+label#btn-choose-file:hover {
+    background-color: var(--border-color);
+}
+
+/* ==========================================================================
+   5. A4 이력서 미리보기 캔버스 (A4 Resume Preview Container)
+   - 인쇄될 A4 용지와 동일한 비율 및 느낌을 주는 가상 컨테이너
+   ========================================================================== */
+.a4-page {
+    width: var(--a4-width);
+    min-height: var(--a4-height);
+    background-color: #ffffff;
+    color: #1e293b;
+    box-shadow: var(--shadow-lg);
+    position: relative;
+    box-sizing: border-box;
+    padding: 20mm;
+    overflow: hidden;
+    transform-origin: top center;
+    transition: transform 0.2s ease;
+}
+
+/* 내용이 비어있을 때 보여주는 플레이스홀더 */
+.preview-placeholder {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    color: #94a3b8;
+    text-align: center;
+    font-style: italic;
+    padding: 4rem;
+    border: 2px dashed #cbd5e1;
+    border-radius: var(--radius-md);
+    margin-top: 50mm;
+}
+
+/* ==========================================================================
+   6. 이력서 템플릿 디자인 (Resume Templates)
+   - 4가지 각기 다른 이력서 스타일 정의
+   ========================================================================== */
+
+/* --- 템플릿 1: 모던 코퍼레이트 (Modern Corporate) --- */
+.template-modern {
+    font-family: 'Inter', sans-serif;
+    line-height: 1.4;
+}
+.template-modern .resume-header { border-bottom: 3px solid #1e3a8a; padding-bottom: 15px; margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center; }
+.template-modern h1 { font-size: 26pt; font-weight: 700; color: #1e3a8a; text-transform: uppercase; letter-spacing: -1px; }
+.template-modern h2 { font-size: 14pt; font-weight: 600; color: #0f172a; margin-top: 5px; }
+.template-modern .contact-strip { font-size: 9pt; color: #475569; display: flex; flex-wrap: wrap; gap: 10px; margin-top: 8px; }
+.template-modern .section-title { font-size: 13pt; font-weight: 700; color: #1e3a8a; border-bottom: 1px solid #e2e8f0; padding-bottom: 3px; margin: 18px 0 8px 0; text-transform: uppercase; letter-spacing: 0.5px; }
+.template-modern .experience-item, .template-modern .education-item { margin-bottom: 12px; }
+.template-modern .item-meta { display: flex; justify-content: space-between; align-items: baseline; }
+.template-modern .item-meta h3 { font-size: 10pt; font-weight: 600; color: #1e293b; margin: 0; }
+.template-modern .item-meta span { font-size: 10pt; color: #1e293b; }
+.template-modern .item-sub { display: flex; justify-content: space-between; font-style: italic; font-size: 9.5pt; color: #475569; margin-bottom: 4px; }
+.template-modern .item-desc { font-size: 9.5pt; color: #334155; }
+.template-modern .skills-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; font-size: 9.5pt; }
+
+/* --- 템플릿 2: ATS 최적화 기본형 (ATS Friendly) --- */
+.template-classic {
+    font-family: Arial, Helvetica, sans-serif;
+    line-height: 1.3;
+    padding: 15mm 15mm !important;
+}
+.template-classic .resume-header { text-align: center; margin-bottom: 15px; }
+.template-classic h1 { font-size: 22pt; font-weight: bold; color: #000000; margin-bottom: 2px; }
+.template-classic h2 { font-size: 12pt; font-weight: normal; font-style: italic; color: #333333; margin-bottom: 5px; }
+.template-classic .contact-strip { font-size: 9.5pt; justify-content: center; display: flex; gap: 8px; border-bottom: 1px solid #000000; padding-bottom: 8px; }
+.template-classic .section-title { font-size: 11pt; font-weight: bold; color: #000000; text-transform: uppercase; border-bottom: 1px solid #000000; margin: 14px 0 6px 0; letter-spacing: 0.5px; }
+.template-classic .item-meta { display: flex; justify-content: space-between; align-items: baseline; }
+.template-classic .item-meta h3 { font-size: 10pt; font-weight: bold; margin: 0; }
+.template-classic .item-sub { display: flex; justify-content: space-between; font-weight: bold; font-size: 10pt; }
+.template-classic .item-desc { font-size: 10pt; margin-top: 2px; text-align: justify; }
+
+/* --- 템플릿 3: 임원/전문가형 (Executive) --- */
+.template-creative {
+    border-top: 8px solid #854d0e;
+}
+.template-creative .resume-header { margin-bottom: 25px; }
+.template-creative h1 { font-size: 28pt; font-weight: 300; color: #0f172a; margin-bottom: 0; }
+.template-creative h2 { font-size: 13pt; font-weight: 500; color: #854d0e; text-transform: uppercase; letter-spacing: 1.5px; }
+.template-creative .contact-strip { font-size: 9pt; background: #f8fafc; padding: 8px 12px; border-radius: 4px; margin-top: 10px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 5px; }
+.template-creative .section-title { font-size: 12pt; font-weight: 600; color: #0f172a; text-transform: uppercase; letter-spacing: 1px; margin: 20px 0 10px 0; display: flex; align-items: center; gap: 10px; }
+.template-creative .section-title::after { content: ''; flex: 1; height: 1px; background: #cbd5e1; }
+.template-creative .item-meta { display: flex; justify-content: space-between; align-items: baseline; }
+.template-creative .item-meta h3 { font-size: 10.5pt; font-weight: 600; margin: 0; }
+.template-creative .item-sub { font-size: 9.5pt; color: #64748b; margin-bottom: 4px; }
+
+/* --- 템플릿 4: 크리에이티브 미니멀 (Creative Minimal - 2단 분할 레이아웃) --- */
+.template-creative-minimal {
+    padding: 0 !important;
+    display: grid !important;
+    grid-template-columns: 75mm 135mm; /* 좌측 사이드바, 우측 메인 컨텐츠 영역 분할 */
+    min-height: var(--a4-height);
+}
+.template-creative-minimal .sidebar { background-color: #1e293b; color: #f8fafc; padding: 20mm 10mm; }
+.template-creative-minimal .main-content { padding: 20mm 12mm; background-color: #ffffff; color: #1e293b; }
+.template-creative-minimal .sidebar h1 { font-size: 20pt; font-weight: 700; color: #ffffff; line-height: 1.2; }
+.template-creative-minimal .sidebar h2 { font-size: 11pt; color: #38bdf8; margin-top: 5px; margin-bottom: 20px; }
+.template-creative-minimal .sidebar .contact-info { font-size: 8.5pt; display: flex; flex-direction: column; gap: 8px; margin-bottom: 25px; }
+.template-creative-minimal .sidebar .section-title { font-size: 11pt; color: #f1f5f9; border-bottom: 1px solid #475569; padding-bottom: 4px; margin-bottom: 10px; text-transform: uppercase; }
+.template-creative-minimal .main-content .section-title { font-size: 13pt; font-weight: 700; color: #1e293b; border-left: 4px solid #38bdf8; padding-left: 8px; margin: 22px 0 12px 0; text-transform: uppercase; }
+.template-creative-minimal .item-meta { display: flex; justify-content: space-between; align-items: baseline; }
+.template-creative-minimal .item-meta h3 { font-size: 10pt; font-weight: 600; margin: 0; }
+
+/* 공통 이력서 사진(아바타) */
+.preview-avatar { width: 70px; height: 70px; border-radius: 50%; object-fit: cover; float: right; margin-left: 15px; }
+
+/* ==========================================================================
+   7. 반응형 브레이크포인트 (Responsive Breakpoints)
+   - 데스크탑 크기 미만일 때 레이아웃을 태블릿/모바일에 맞게 변형
+   ========================================================================== */
+@media (max-width: 1200px) {
+    /* 워크스페이스를 세로 1단으로 변경 */
+    .workspace-container {
+        grid-template-columns: 1fr;
+        height: auto;
+        overflow: visible;
+    }
+    .editor-panel, .preview-panel {
+        overflow-y: visible;
+        height: auto;
+    }
+    .preview-panel {
+        padding-top: 2rem;
+        border-top: 2px dashed var(--border-color);
+    }
+}
+
+@media (max-width: 768px) {
+    /* 모바일 환경 최적화 설정 */
+    .app-header {
+        padding: 0 1rem;
+        height: auto;
+        padding-top: 1rem;
+        padding-bottom: 1rem;
+    }
+    .header-container {
+        flex-direction: column;
+        gap: 1rem;
+        align-items: flex-start;
+    }
+    .controls-nav {
+        flex-wrap: wrap;
+        width: 100%;
+        gap: 0.75rem;
+    }
+    .workspace-container {
+        padding: 1rem;
+    }
+    /* 폼 열을 1열로 축소 */
+    .form-grid {
+        grid-template-columns: 1fr;
+    }
+    .form-group.full-width {
+        grid-column: span 1;
+    }
+    /* 작은 화면에서 A4 미리보기 축소 */
+    .a4-page {
+        transform: scale(0.45);
+        transform-origin: top left;
+        margin-left: 0;
+    }
+    .preview-panel {
+        width: 100%;
+        overflow-x: auto;
+        align-items: flex-start;
+    }
+}
+
+/* ==========================================================================
+   8. 스킬 칩 및 세부 인터페이스 튜닝 (Skills Chips & Interface Tweaks)
+   - 기술 스택을 둥근 태그 형태로 보여주고, 특정 템플릿의 색상을 강제 조정
+   ========================================================================== */
+/* 기술 스택 태그 스타일 */
+.skills-chips span {
+    background-color: var(--primary-light, #e1effe);
+    color: var(--primary, #1a56db);
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-size: 8.5pt;
+    font-weight: 500;
+    display: inline-block;
+}
+
+/* 다크 모드에서도 A4 용지만은 흰색 유지 */
+#a4-preview-container, .a4-page {
+    background-color: #ffffff !important;
+    color: #1e293b !important;
+}
+
+/* 템플릿 4(사이드바) 텍스트 컬러 강제 유지 */
+.template-creative-minimal .sidebar .section-title {
+    color: #f1f5f9 !important;
+}
+.template-creative-minimal .sidebar p, 
+.template-creative-minimal .sidebar span,
+.template-creative-minimal .sidebar strong {
+    color: #cbd5e1 !important;
+}
+
+/* ==========================================================================
+   9. 인쇄용 스타일시트 (Print Stylesheet)
+   - 빈 페이지 발생 및 브라우저 정보 출력을 막고 완벽한 A4 출력을 지원하는 초정밀 엔진
+   ========================================================================== */
+@media print {
+    @page {
+        margin: 0; /* 브라우저 기본 강제 상/하단 메타데이터(날짜/URL) 전면 제거 */
+        size: A4 portrait; /* A4 규격 수직 고정 */
+    }
+    
+    html, body {
+        margin: 0 !important;
+        padding: 0 !important;
+        height: 100% !important;
+        overflow: hidden !important; /* 초과 내용으로 인한 공백 페이지 생성 원천 차단 */
+        background-color: #ffffff !important;
+        color: #1e293b !important;
+        -webkit-print-color-adjust: exact; /* 컬러 인쇄 강제 */
+        print-color-adjust: exact;
+    }
+
+    /* 화면용 인터페이스 컴포넌트(헤더, 버튼 등) 완전 은닉 */
+    .app-header, 
+    .editor-panel, 
+    .preview-sticky-controls, 
+    .btn, 
+    button, 
+    form,
+    .preview-placeholder {
+        display: none !important;
+    }
+
+    /* 인쇄될 영역만 100% 노출 */
+    .workspace-container, .preview-panel {
+        display: block !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        width: 210mm !important;
+        height: 100% !important;
+        overflow: hidden !important;
+    }
+
+    /* 실제 인쇄용 캔버스 - A4 크기 고정 및 불필요한 테두리/그림자 제거 */
+    .a4-page, #resume-preview {
+        display: block !important;
+        position: relative !important;
+        width: 210mm !important;
+        height: 297mm !important;
+        max-height: 297mm !important;
+        padding: 12mm 15mm !important; /* 상하 여백 디톡스로 콤팩트 규정 */
+        margin: 0 !important;
+        border: none !important;
+        box-shadow: none !important;
+        transform: scale(1) !important;
+        box-sizing: border-box !important;
+        overflow: hidden !important;
+
+        /* 뒤쪽 공백/여백 장치 누수 방지 (페이지 잘림 방지) */
+        page-break-after: avoid !important;
+        break-after: avoid !important;
+        page-break-inside: avoid !important;
+        break-inside: avoid !important;
+    }
+
+    /* 4번 미니멀 템플릿 - 인쇄 시 레이아웃 깨짐 방지 */
+    .template-creative-minimal {
+        display: grid !important;
+        grid-template-columns: 70mm 140mm !important;
+        height: 297mm !important;
+    }
+    .template-creative-minimal .sidebar {
+        background-color: #1e293b !important;
+        color: #f8fafc !important;
+        padding: 12mm 8mm !important;
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+    }
+    .template-creative-minimal .main-content {
+        padding: 12mm 10mm !important;
+    }
+
+    /* 폰트 및 마진 미세 다이어트로 2페이지로 넘어가는 현상 방지 */
+    #output-resume-content .resume-header { margin-bottom: 4mm !important; }
+    #output-resume-content .preview-section { margin-bottom: 4mm !important; }
+    #output-resume-content h1 { font-size: 20pt !important; margin-bottom: 1.5mm !important; }
+    #output-resume-content h2.section-title { font-size: 12pt !important; margin-bottom: 2mm !important; padding-bottom: 1mm !important; }
+    #output-resume-content h3 { font-size: 10.5pt !important; }
+    #output-resume-content p, #output-resume-content span, #output-resume-content div { 
+        font-size: 9.5pt !important; 
+        line-height: 1.4 !important; 
+    }
+
+    /* 하나의 정보 블록이 인쇄 도중 중간에서 쪼개지지 않도록 보호 */
+    .contact-strip span, .contact-info span, .experience-item, .education-item, .project-item {
+        page-break-inside: avoid !important;
+        break-inside: avoid !important;
+    }
+}
+
+/* ==========================================================================
+   10. AI RESUME ASSISTANT
+   ========================================================================== */
+.ai-panel {
+    grid-column: 1 / -1;
+    background: var(--bg-surface);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-lg);
+    padding: 2rem;
+    box-shadow: var(--shadow-md);
+    min-width: 0;
+}
+.ai-panel-header { display:flex; justify-content:space-between; align-items:flex-start; gap:1rem; margin-bottom:1.5rem; }
+.ai-eyebrow { display:inline-block; font-size:.7rem; font-weight:800; letter-spacing:.12em; color:var(--primary); margin-bottom:.3rem; }
+.ai-panel-header h2 { font-size:1.6rem; margin-bottom:.35rem; }
+.ai-panel-header p { color:var(--text-muted); font-size:.9rem; }
+.ai-status { display:inline-flex; align-items:center; gap:.45rem; padding:.45rem .75rem; border-radius:999px; background:var(--bg-surface-subtle); color:var(--text-muted); font-size:.75rem; font-weight:700; white-space:nowrap; }
+.ai-status-dot { width:8px; height:8px; border-radius:50%; background:#22c55e; }
+.ai-status.loading .ai-status-dot { background:#f59e0b; animation:aiPulse 1s infinite; }
+.ai-status.error .ai-status-dot { background:var(--danger); }
+@keyframes aiPulse { 0%,100%{opacity:1} 50%{opacity:.35} }
+.ai-section { background:var(--bg-surface-subtle); border:1px solid var(--border-color); border-radius:var(--radius-md); padding:1.25rem; }
+.ai-section label { display:block; margin-bottom:.5rem; font-weight:700; }
+.ai-job-input { min-height:190px; resize:vertical; line-height:1.6; }
+.ai-action-row { display:flex; gap:.75rem; margin-top:1rem; }
+.btn-ai { background:linear-gradient(135deg,var(--primary),#7c3aed); color:#fff; border:none; min-width:220px; }
+.btn-ai:hover { transform:translateY(-1px); box-shadow:var(--shadow-md); }
+.btn-ai:disabled { opacity:.6; cursor:not-allowed; transform:none; }
+.ai-loading { display:flex; align-items:center; gap:1rem; margin-top:1rem; padding:1rem; border-radius:var(--radius-md); background:var(--primary-light); color:var(--text-main); }
+.ai-loading > div:last-child { display:flex; flex-direction:column; gap:.2rem; }
+.ai-loading span { font-size:.8rem; color:var(--text-muted); }
+.ai-spinner { width:24px; height:24px; border:3px solid var(--border-color); border-top-color:var(--primary); border-radius:50%; animation:aiSpin .8s linear infinite; }
+@keyframes aiSpin { to{transform:rotate(360deg)} }
+.ai-results { display:flex; flex-direction:column; gap:1rem; margin-top:1.25rem; }
+.ai-score-grid { display:grid; grid-template-columns:repeat(2,1fr); gap:1rem; }
+.ai-score-card { padding:1.25rem; border:1px solid var(--border-color); border-radius:var(--radius-md); background:var(--bg-surface-subtle); }
+.ai-score-card span { display:block; color:var(--text-muted); font-size:.8rem; font-weight:700; margin-bottom:.3rem; }
+.ai-score-card strong { font-size:2.5rem; line-height:1; color:var(--primary); }
+.ai-score-card small { color:var(--text-muted); }
+.ai-result-card,.ai-improvement-card { padding:1.25rem; border:1px solid var(--border-color); border-radius:var(--radius-md); background:var(--bg-surface); }
+.ai-result-card h3,.ai-improvement-card h3 { font-size:1rem; margin-bottom:.8rem; }
+.ai-result-card p { color:var(--text-muted); line-height:1.65; }
+.ai-result-card ul { padding-left:1.2rem; }
+.ai-result-card li { margin-bottom:.45rem; line-height:1.5; }
+.keyword-group { margin-bottom:1rem; }
+.keyword-group:last-child { margin-bottom:0; }
+.keyword-group > strong { display:block; margin-bottom:.5rem; font-size:.8rem; }
+.keyword-list { display:flex; flex-wrap:wrap; gap:.45rem; }
+.keyword-list span { display:inline-flex; align-items:center; padding:.35rem .65rem; border-radius:999px; background:var(--primary-light); color:var(--primary); font-size:.75rem; font-weight:700; }
+.keyword-list.missing span { background:rgba(225,29,72,.1); color:var(--danger); }
+.ai-improvement-card { border-left:4px solid var(--primary); }
+.ai-improvement-header { display:flex; justify-content:space-between; align-items:center; gap:1rem; }
+.ai-improvement-header h3 { margin-bottom:0; }
+.btn-ai-apply { background:var(--primary); color:#fff; border:none; padding:.5rem .9rem; }
+.btn-ai-apply:hover { background:var(--primary-hover); }
+.btn-ai-apply.applied { background:#16a34a; }
+.ai-current-block,.ai-improved-block { padding:.9rem; border-radius:var(--radius-sm); margin-top:.9rem; }
+.ai-current-block { background:var(--bg-surface-subtle); }
+.ai-improved-block { background:var(--primary-light); }
+.ai-current-block > span,.ai-improved-block > span { display:block; font-size:.7rem; text-transform:uppercase; letter-spacing:.08em; font-weight:800; margin-bottom:.35rem; color:var(--text-muted); }
+.ai-current-block p,.ai-improved-block p { line-height:1.6; white-space:pre-line; }
+.ai-reason { margin-top:.75rem; font-size:.8rem; color:var(--text-muted); }
+.ai-mini-card { border:1px solid var(--border-color); border-radius:var(--radius-sm); padding:1rem; margin-bottom:.75rem; background:var(--bg-surface-subtle); }
+.ai-mini-card:last-child { margin-bottom:0; }
+.ai-mini-card-header { display:flex; justify-content:space-between; align-items:flex-start; gap:1rem; }
+.ai-mini-card-header h4 { font-size:.9rem; }
+.ai-mini-current,.ai-mini-improved { margin-top:.65rem; padding:.75rem; border-radius:6px; }
+.ai-mini-current { background:var(--bg-surface); }
+.ai-mini-improved { background:var(--primary-light); }
+.ai-mini-label { display:block; font-size:.68rem; text-transform:uppercase; font-weight:800; color:var(--text-muted); margin-bottom:.25rem; }
+.ai-mini-card p { font-size:.85rem; line-height:1.55; white-space:pre-line; }
+.skill-analysis-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:1rem; }
+.skill-analysis-grid > div { padding:.9rem; background:var(--bg-surface-subtle); border-radius:var(--radius-sm); }
+.skill-analysis-grid > div > strong { display:block; font-size:.8rem; margin-bottom:.6rem; }
+@media (max-width:1200px) { .ai-panel { grid-column:1; } }
+@media (max-width:900px) { .skill-analysis-grid { grid-template-columns:1fr; } }
+@media (max-width:768px) { .ai-panel { padding:1rem; } .ai-panel-header{flex-direction:column;} .ai-score-grid{grid-template-columns:1fr;} .ai-action-row{flex-direction:column;} .btn-ai{width:100%;} }
+@media print { .ai-panel { display:none !important; } }
+
+
+/* ==========================================================================
+   11. RESUME BUILDER LAYOUT OVERRIDE
+   - 기존 기능/JS는 유지하고 화면 구조만 재배치합니다.
+   - 데스크톱: 왼쪽 Editor + 오른쪽 Live Preview
+   - 페이지를 아래로 스크롤하면 AI Assistant가 이어서 표시됩니다.
+   ========================================================================== */
+
+/* 전체 페이지가 AI 영역까지 자연스럽게 이어지도록 */
+html,
+body {
+    min-height: 100%;
+}
+
+body {
+    overflow-x: hidden;
+}
+
+/* 메인 영역: 첫 번째 row는 Editor + Preview, 두 번째 row는 AI */
+.workspace-container {
+    display: grid;
+    grid-template-columns: minmax(0, 1.08fr) minmax(0, 0.92fr);
+    grid-template-rows: minmax(720px, calc(100vh - 100px)) auto;
+    gap: 2rem;
+    width: 100%;
+    max-width: 1800px;
+    margin: 0 auto;
+    padding: 1.5rem 2rem 4rem;
+    height: auto;
+    min-height: calc(100vh - 70px);
+    overflow: visible;
+    align-items: stretch;
+}
+
+/* 왼쪽 Editor: 화면의 주요 작업 공간으로 확대 */
+.editor-panel {
+    width: 100%;
+    min-width: 0;
+    height: 100%;
+    min-height: 0;
+    padding: 2rem;
+    overflow-y: auto;
+    overflow-x: hidden;
+    overscroll-behavior: contain;
+}
+
+/* Editor 제목을 작업 영역의 헤더처럼 */
+.editor-panel .panel-title {
+    position: sticky;
+    top: -2rem;
+    z-index: 5;
+    padding: 1.25rem 0 1rem;
+    margin-bottom: 1rem;
+    background: var(--bg-surface);
+}
+
+/* 오른쪽 Preview: A4가 충분히 크게 보이도록 */
+.preview-panel {
+    width: 100%;
+    min-width: 0;
+    height: 100%;
+    min-height: 0;
+    padding: 0 0.5rem 2rem;
+    overflow-y: auto;
+    overflow-x: auto;
+    align-items: center;
+    overscroll-behavior: contain;
+}
+
+/* Preview 컨트롤은 상단에 계속 보이도록 */
+.preview-sticky-controls {
+    position: sticky;
+    top: 0;
+    width: 100%;
+    min-width: 560px;
+    padding: 0.9rem 0;
+    margin-bottom: 1.25rem;
+    background: var(--bg-app);
+}
+
+/* A4 용지는 Preview 중앙에 크게 표시 */
+.preview-panel .a4-page {
+    flex: 0 0 auto;
+    margin: 0 auto;
+}
+
+/* AI는 반드시 두 컬럼 전체를 사용 */
+.ai-panel {
+    grid-column: 1 / -1;
+    grid-row: 2;
+    width: 100%;
+    margin-top: 0;
+}
+
+/* AI 입력 영역도 넓게 */
+.ai-job-input {
+    width: 100%;
+}
+
+/* AI 결과를 한 화면에서 읽기 좋게 */
+.ai-score-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+/* ==========================================================================
+   Responsive
+   ========================================================================== */
+
+@media (max-width: 1200px) {
+    .workspace-container {
+        grid-template-columns: minmax(0, 1fr);
+        grid-template-rows: auto auto auto;
+    }
+
+    .editor-panel,
+    .preview-panel {
+        height: 780px;
+    }
+
+    .editor-panel {
+        grid-row: 1;
+    }
+
+    .preview-panel {
+        grid-row: 2;
+    }
+
+    .ai-panel {
+        grid-column: 1;
+        grid-row: 3;
+    }
+}
+
+@media (max-width: 768px) {
+    .workspace-container {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+        padding: 1rem;
+        min-height: auto;
+    }
+
+    .editor-panel,
+    .preview-panel {
+        width: 100%;
+        height: auto;
+        min-height: 0;
+    }
+
+    .editor-panel {
+        padding: 1.25rem;
+        overflow: visible;
+    }
+
+    .editor-panel .panel-title {
+        position: static;
+        padding: 0;
+        margin-bottom: 1.25rem;
+    }
+
+    .preview-panel {
+        padding: 0 0 1.5rem;
+        overflow-x: auto;
+    }
+
+    .preview-sticky-controls {
+        min-width: 0;
+        flex-direction: column;
+        align-items: stretch;
+        gap: 0.75rem;
+    }
+
+    .preview-sticky-controls > div {
+        flex-wrap: wrap;
+    }
+
+    .ai-panel {
+        width: 100%;
+    }
+
+    .ai-score-grid {
+        grid-template-columns: 1fr;
+    }
+}
