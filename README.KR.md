@@ -1,5 +1,7 @@
 # 🚀 다국어 ATS 이력서 빌더
 
+[English version 보기](./README.md)
+
 브라우저에서 전문적인 이력서를 작성하고, 디자인을 변경하고, 저장 및 내보낼 수 있는 웹 기반 이력서 제작 도구입니다.
 
 > **🌐 [라이브 데모](https://thedevhublab.github.io/Resume/)**

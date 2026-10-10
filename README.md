@@ -1,5 +1,7 @@
 # 🚀 Ultimate Multilingual ATS Resume Builder
 
+[한국어 버전으로 보기](./README.KR.md)
+
 A browser-based resume builder designed to help users create, customize, manage, and export professional resumes.
 
 > **🌐 [Live Demo](https://thedevhublab.github.io/Resume/)**
